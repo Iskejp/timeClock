@@ -1,0 +1,29 @@
+{# Dashboard template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Dashboard{% endblock %}
+
+{% block body %}
+    <section id="main">
+        <h1 class="hoverinfo">I came <time class="timeago" datetime="{{ time|date('c') }}" title="The session is running for {{ interval }}"></time>!</h1>
+        <p>Today is {{ time|date('l, d F Y') }} your are present since <time datetime="{{ time|date('c') }}" title="">{{ time|date('H:i') }}</time> as <span title="My code is {{ user.code }}." class="hoverhelp"><strong>{{ user.name }}</strong></span>.</p>
+    </section>
+    <section id="report">
+        <h2>Who is in?</h2>
+        <p><a href="{{ path('peopleIn') }}">Print report who is in</a></p>
+        <div id="user-cloud" class='jqcloud'></div>        
+    </section> 
+    <section id="navigation">
+        <span class="button"><a href="{{ path('signOut') }}">Sign Out</a></span>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript">
+        var words = {{ (names|json_encode|raw) }};
+        
+        $('#user-cloud').jQCloud(words);
+    </script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{# Sign In template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Sign Out{% endblock %}
+
+{% block body %}
+    <section id="main-area">
+        <h1 class="logo">Good Bye!</h1>
+        <p>You have been signed out.</p>
+    </section>
+    <section id="navigation">
+        <span class="button"><a href="{{ path('home') }}">Home</a></span>      
+    </section>
+{% endblock %}

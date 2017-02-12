@@ -1,0 +1,13 @@
+{# Sign In template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Sign In{% endblock %}
+
+{% block body %}
+    <section id="main">
+        <h1 class="logo">Welcome!</h1>
+    </section>
+    <section id="navigation">
+        <span class="button"><a href="{{ path('signIn') }}">Sign In</a></span>
+    </section>
+{% endblock %}
