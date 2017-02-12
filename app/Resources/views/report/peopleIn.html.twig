@@ -1,0 +1,38 @@
+{# Report template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Report: People signed in{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" media="print" href="{{ asset('css/report.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h2>Report: People signed in</h2>
+    <p>Generated: {{ "now"|date('l, d F Y, H:i.s') }}</p>
+    <table>
+        <tbody>
+            {% for person in peopleIn %}
+            <tr>
+                <td class="name">{{ person.user.name }}</td>
+                <td class="number">{{ person.time|date('H:i.s') }}</td>
+                <td class="number">{{ personalAnalytics[person.id].period }}</td>
+            </tr>
+            {% endfor %}    
+        </tbody>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Arrival</th>
+                <th>Period</th>
+            </tr>    
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="foot">Totals</td>
+                <td class="number foot">{{ peopleIn|length }} sessions </td>
+                <td class="number foot">{{ overallAnalytics.totalHours|round(2, 'floor') }} hours</td>
+            </tr>
+        </tfoot>    
+    </table>    
+{% endblock %}

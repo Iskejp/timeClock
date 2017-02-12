@@ -1,0 +1,21 @@
+{# Registration Twig template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Registration{% endblock %}
+
+{% block body %}
+    <section id="main-area">
+        <h1>timeClock</h1>
+        
+        {% if error != FALSE %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
+    </section>
+    <section id="navigation">
+        <span class="button"><a href="{{ path('home') }}">Home</a></span>      
+    </section>    
+{% endblock %}
