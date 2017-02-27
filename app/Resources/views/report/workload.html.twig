@@ -1,0 +1,38 @@
+{# Report template #}
+{% extends 'base.html.twig' %}
+
+{% block title %}timeClock | Report: Workload{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" media="print" href="{{ asset('css/report.css') }}">
+{% endblock %}
+
+{% block body %}
+    <h2>Report: Personal Workload</h2>
+    <p>Generated: {{ "now"|date('l, d F Y, H:i:s') }}</p>
+    <table>
+        <tbody>
+            {% for workLoad in workLoads %}
+            <tr>
+                <td class="name">{{ workLoad.0.user.name }}</td>
+                <td class="number">{{ workLoad.timediff }}</td>
+                <td class="number">{{ workLoad.sessions }}</td>
+            </tr>
+            {% endfor %}    
+        </tbody>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Workload</th>
+                <th>Sessions</th>
+            </tr>    
+        </thead>
+        <tfoot>
+            <tr>
+                <td class="foot">Totals</td>
+                <td class="number foot">{{ workLoads|length }} users </td>
+                <td class="number foot">{{ sessionTotal }} sessions</td>
+            </tr>
+        </tfoot>    
+    </table>    
+{% endblock %}

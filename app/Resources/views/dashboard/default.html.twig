@@ -8,10 +8,15 @@
         <h1 class="hoverinfo">I came <time class="timeago" datetime="{{ time|date('c') }}" title="The session is running for {{ interval }}"></time>!</h1>
         <p>Today is {{ time|date('l, d F Y') }} your are present since <time datetime="{{ time|date('c') }}" title="">{{ time|date('H:i') }}</time> as <span title="My code is {{ user.code }}." class="hoverhelp"><strong>{{ user.name }}</strong></span>.</p>
     </section>
-    <section id="report">
+    <section id="peopleIn">
         <h2>Who is in?</h2>
         <p><a href="{{ path('peopleIn') }}">Print report who is in</a></p>
         <div id="user-cloud" class='jqcloud'></div>        
+    </section> 
+    <section id="workload">
+        <h2>What has been done?</h2>
+        <p><a href="{{ path('workload') }}">Print Workload report </a></p>
+        <div id="work-cloud" class='jqcloud'></div>        
     </section> 
     <section id="navigation">
         <span class="button"><a href="{{ path('signOut') }}">Sign Out</a></span>
@@ -23,7 +28,9 @@
     
     <script type="text/javascript">
         var words = {{ (names|json_encode|raw) }};
+        var work = {{ (workers|json_encode|raw) }};
         
         $('#user-cloud').jQCloud(words);
+        $('#work-cloud').jQCloud(work);
     </script>
 {% endblock %}

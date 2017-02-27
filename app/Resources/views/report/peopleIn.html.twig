@@ -15,7 +15,7 @@
             {% for person in peopleIn %}
             <tr>
                 <td class="name">{{ person.user.name }}</td>
-                <td class="number">{{ person.time|date('H:i.s') }}</td>
+                <td class="number">{{ person.timeIn|date('H:i.s') }}</td>
                 <td class="number">{{ personalAnalytics[person.id].period }}</td>
             </tr>
             {% endfor %}    

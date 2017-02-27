@@ -40,9 +40,23 @@ class Presence
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="time", type="datetime")
+     * @ORM\Column(name="timeIn", type="datetime")
      */
-    private $time;
+    private $timeIn;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="timeOut", type="datetime", nullable=true)
+     */
+    private $timeOut;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="timePeriod", type="time", nullable=true)
+     */
+    private $timePeriod;
     
     /**
      * @var string
@@ -140,27 +154,75 @@ class Presence
     }
 
     /**
-     * Set time
+     * Set timeIn
      *
-     * @param \DateTime $time
+     * @param \DateTime $timeIn
      *
      * @return Presence
      */
-    public function setTime($time)
+    public function setTimeIn($timeIn)
     {
-        $this->time = $time;
+        $this->timeIn = $timeIn;
 
         return $this;
     }
 
     /**
-     * Get time
+     * Get timeIn
      *
      * @return \DateTime
      */
-    public function getTime()
+    public function getTimeIn()
     {
-        return $this->time;
+        return $this->timeIn;
+    }
+
+    /**
+     * Set timeOut
+     *
+     * @param \DateTime $timeOut
+     *
+     * @return Presence
+     */
+    public function setTimeOut($timeOut)
+    {
+        $this->timeOut = $timeOut;
+
+        return $this;
+    }
+
+    /**
+     * Get timeOut
+     *
+     * @return \DateTime
+     */
+    public function getTimeOut()
+    {
+        return $this->timeOut;
+    }
+    
+    /**
+     * Set timePeriod
+     *
+     * @param \DateTime $timePeriod
+     *
+     * @return Presence
+     */
+    public function setTimePeriod($timePeriod)
+    {
+        $this->timePeriod = $timePeriod;
+
+        return $this;
+    }
+
+    /**
+     * Get timePeriod
+     *
+     * @return \DateTime
+     */
+    public function getTimePeriod()
+    {
+        return $this->timePeriod;
     }
 
     /**

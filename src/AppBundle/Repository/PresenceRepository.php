@@ -10,15 +10,33 @@ namespace AppBundle\Repository;
  */
 class PresenceRepository extends \Doctrine\ORM\EntityRepository {
     
-    public function findAllUsers() {
+    public function findAllUsersInWork() {
         
         $query = $this->getEntityManager()
             ->createQuery(
                 'SELECT p, u '
               . 'FROM AppBundle:Presence p '
               . 'JOIN p.user u '
-              . 'GROUP BY p.token '
-              . 'HAVING COUNT(p.token) = 1 '
+              . 'WHERE p.timeOut IS NULL AND p.type LIKE \'work\' '      
+              . 'ORDER BY u.name'
+            );
+
+        try {
+            return $query->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }        
+    }
+    
+    public function findWorkload() {
+        
+        $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT p, u, COUNT(p.user) AS sessions, SEC_TO_TIME(SUM(TIME_TO_SEC(p.timeOut) - TIME_TO_SEC(p.timeIn))) AS timediff '
+              . 'FROM AppBundle:Presence p '
+              . 'JOIN p.user u '
+              . 'WHERE p.type = \'work\' '      
+              . 'GROUP BY p.user '      
               . 'ORDER BY u.name'
             );
 

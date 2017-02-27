@@ -91,9 +91,9 @@ class SignController extends BasicController {
             
             //Prepare object for new presence
             $presence = new Presence();
-            $presence->setType('in');
+            $presence->setType('work');
             $presence->setToken($token);
-            $presence->setTime($now);
+            $presence->setTimeIn($now);
             $presence->setUser($user);
 
             $em = $this->getDoctrine()->getManager();
@@ -179,18 +179,29 @@ class SignController extends BasicController {
         }
         
         //Prepare data
-        $date = new \DateTime('now');
+        $now = new \DateTime('now');
         
         //Prepare an object for new presence
-        $presence = new Presence();
-        $presence->setType('out');
-        $presence->setToken($token);
-        $presence->setTime($date);
-        $presence->setUser($user);
-
         $em = $this->getDoctrine()->getManager();
-        $em->persist($presence);
+        $session = $em->getRepository('AppBundle:Presence')->findOneBy(
+            array('token' => $token, 'timeOut' => NULL)
+        );
+
+        if (!$session) {
+            throw $this->createNotFoundException(
+                'No session found.'
+            );
+        }
         
+        //Figure out a time difference
+        $timeIn = $session->getTimeIn();
+        $timePeriod = $now->diff($timeIn)->format("%H:%I.%s");
+        dump($timePeriod);
+                
+        //Update data
+        $session->setTimeOut($now);
+        $session->setTimePeriod($timePeriod);
+
         //Save data to the DB.
         $em->flush();
         

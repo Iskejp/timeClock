@@ -8,8 +8,8 @@
         <h1 class="logo">timeClock</h1>
     </section>
     <section id="navigation">
-        {% if code != 0 %}
-            <span class="button"><a href="{{ path('signIn', {'code': code }) }}">Sign In as a last user</a></span> |
+        {% if code != 0 or code != '' %}
+            <span class="button"><a href="{{ path('signIn', {'code': code }) }}">Sign In as a last user</a></span>
         {% endif %}
         
         <span class="button"><a href="{{ path('signUp') }}">Sign Up</a></span>        

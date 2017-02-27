@@ -86,7 +86,6 @@ class BasicController extends Controller {
                     array('type' => 'out', 'token' => $token)
             );
             
-            dump($presence);
             return ($presence) ? FALSE : TRUE;
         } else {
             return false;

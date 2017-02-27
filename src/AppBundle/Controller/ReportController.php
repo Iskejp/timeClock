@@ -50,13 +50,13 @@ class ReportController extends BasicController {
         }
         
         //Search all signed in users
-        $peopleIn = $this->getDoctrine()->getRepository('AppBundle:Presence')->findAllUsers();
+        $peopleIn = $this->getDoctrine()->getRepository('AppBundle:Presence')->findAllUsersInWork();
         
         //Personal analytics
         foreach($peopleIn as $person) {
             //Get current time and user time
             $now = new \DateTime('now');
-            $time = $person->getTime();
+            $time = $person->getTimeIn();
             $personalAnalytics[$person->getId()]['period'] = $now->diff($time)->format('%H:%I.%S');
             
             //Workout totals
@@ -73,6 +73,35 @@ class ReportController extends BasicController {
             'peopleIn' => $peopleIn,
             'personalAnalytics' => $personalAnalytics,
             'overallAnalytics' => $overallAnalytics,
+        ));     
+    }
+    
+    /**
+     * @Route("/report/workload", name="workload")
+     */
+    
+    public function workloadAction(Request $request) {
+        $sessionTotal = 0;
+        
+        //$now = new \DateTime('now');        
+        //$lastMonday = new \DateTime(strtotime('last Monday'));
+        
+        //Check session redirect if doesn't exist
+        if(!$this->checkSession($request)) {
+            return $this->redirectToRoute('home');
+        }
+        
+        //Search for workload
+        $workloads = $this->getDoctrine()->getRepository('AppBundle:Presence')->findWorkload();
+        
+        foreach($workloads as $workload) {
+            dump($workload);
+            $sessionTotal += $workload['sessions'];
+        }
+        
+        return $this->render('report/workload.html.twig', array(
+            'workLoads' => $workloads,
+            'sessionTotal' => $sessionTotal,
         ));     
     }
 }

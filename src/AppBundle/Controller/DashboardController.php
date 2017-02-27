@@ -62,28 +62,37 @@ class DashboardController extends BasicController {
             
             //Find presence in records
             $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
-                    array('type' => 'in', 'token' => $token)
+                    array('type' => 'work', 'token' => $token)
             );
             
-            $userTime = $presence->getTime();
+            $userTime = $presence->getTimeIn();
             $userInterval = $now->diff($userTime);
             
             //Find other active users
             $peopleIn = $this->whoIsIn();
             
-            //Generate JQCloud
+            //Search for workload
+            $workloads = $this->getDoctrine()->getRepository('AppBundle:Presence')->findWorkload();
+            
+            //Generate date for JQCloud - People In
             foreach($peopleIn as $person) {
                 //Read sign in time and count interval
-                $time = $person->getTime();
+                $time = $person->getTimeIn();
                 $interval = $now->diff($time);
 
                 $names[] = array('text' => $person->getUser()->getName(), 'weight' => $interval->format('%i'));
             }
-
+            
+            //Generate Data for JQCloud - Worker
+            foreach($workloads as $workload) {
+                $workers[] = array('text' => $workload[0]->getUser()->getName(), 'weight' => $workload['sessions']);
+            }
+            
             return $this->render('dashboard/default.html.twig', array(
                 'time' => $userTime,
                 'interval' => $userInterval->format('%d days %h hours %i minutes %s seconds'),
                 'names' => $names,
+                'workers' => $workers,
                 'user' => $user,
             ));
         } else {
@@ -93,7 +102,7 @@ class DashboardController extends BasicController {
     }
     
     private function whoIsIn() {
-        $users = $this->getDoctrine()->getRepository('AppBundle:Presence')->findAllUsers();
+        $users = $this->getDoctrine()->getRepository('AppBundle:Presence')->findAllUsersInWork();
         return $users;
     }    
 }
