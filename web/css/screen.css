@@ -86,6 +86,12 @@ section#navigation span.button a:hover {
     color: rgb(200, 200, 200);
 }
 
+section#navigation div.note {
+    font-size: 0.7em;
+    text-align: left;
+    color: rgb(100, 100, 100);
+}
+
 section#main {
 }
 

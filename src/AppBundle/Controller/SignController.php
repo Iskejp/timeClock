@@ -174,12 +174,11 @@ class SignController extends BasicController {
         //Search for user details        
         $userCode = $this->cookies->get('user');
         $user = $this->findUser($userCode);
-        if($user === null) {
+        
+        if($user === NULL || !isset($token))
+        {
             return $this->redirectToRoute('home');
         }
-        
-        //Prepare data
-        $now = new \DateTime('now');
         
         //Prepare an object for new presence
         $em = $this->getDoctrine()->getManager();
@@ -187,20 +186,21 @@ class SignController extends BasicController {
             array('token' => $token, 'timeOut' => NULL)
         );
 
-        if (!$session) {
+        if (!$session)
+        {
             throw $this->createNotFoundException(
                 'No session found.'
             );
         }
         
         //Figure out a time difference
+        $now = new \DateTime('now');
         $timeIn = $session->getTimeIn();
-        $timePeriod = $now->diff($timeIn)->format("%H:%I.%s");
-        dump($timePeriod);
-                
+        $timePeriod = $now->diff($timeIn)->format('%H:%I:%S');
+
         //Update data
         $session->setTimeOut($now);
-        $session->setTimePeriod($timePeriod);
+        $session->setTimePeriod(\DateTime::createFromFormat('H:i:s', $timePeriod)); //Convert DateInterval to DateTime
 
         //Save data to the DB.
         $em->flush();

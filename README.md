@@ -1,7 +1,7 @@
 #timeClock
 A Symfony project created on February 2, 2017, 12:18 am.
 
-Simple and beautiful system for recording and tracking a staff attendance.
+A simple and beautiful system for recording and tracking a staff attendance.
 
 ##Change log
 \+ New / * Fixed / N Night Built

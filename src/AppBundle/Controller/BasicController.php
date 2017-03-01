@@ -50,37 +50,38 @@ class BasicController extends Controller {
         return $this->cookies;
     }
 
-    protected function checkSession(Request $request) {
-        
+    protected function checkSession(Request $request)
+    {
         $this->setCookies($request);
-        
-        if($request->cookies->has('session')) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return $request->cookies->has('session');
     }
     
-    protected function readUserCookie(Request $request) {
+    protected function readUserCookie(Request $request)
+    {
         
         $this->setCookies($request);
         
-        if($request->cookies->has('user')) {
+        if($request->cookies->has('user'))
+        {
             return $request->cookies->get('user');
-        } else {
+        }
+        else
+        {
             return FALSE;
         }
     }
 
 
-    protected function findUser($userCode = null) {
+    protected function findUser($userCode = null)
+    {
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(
                 array('code' => $userCode));
         
         return $user;
     }
     
-    protected function isUserIn($token) {
+    protected function isUserIn($token)
+    {
         if($token) {
             $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
                     array('type' => 'out', 'token' => $token)
@@ -90,5 +91,15 @@ class BasicController extends Controller {
         } else {
             return false;
         }
+    }
+    
+    protected function secondsToString($timeTotal)
+    {
+        $hrs = floor($timeTotal / 3600);
+        $min = floor($timeTotal / 60 % 60);
+        $sec = floor($timeTotal % 60);
+        $hoursTotal = sprintf('%02d:%02d:%02d', $hrs, $min, $sec);
+        
+        return $hoursTotal;        
     }
 }

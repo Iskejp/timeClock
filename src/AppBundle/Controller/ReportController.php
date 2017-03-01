@@ -81,6 +81,7 @@ class ReportController extends BasicController {
      */
     
     public function workloadAction(Request $request) {
+        $timeTotal = 0;
         $sessionTotal = 0;
         
         //$now = new \DateTime('now');        
@@ -95,12 +96,16 @@ class ReportController extends BasicController {
         $workloads = $this->getDoctrine()->getRepository('AppBundle:Presence')->findWorkload();
         
         foreach($workloads as $workload) {
-            dump($workload);
             $sessionTotal += $workload['sessions'];
+            $timeTotal += $workload['timeDiffSec'];
         }
+        
+        //Figure out a total time
+        $hoursTotal = $this->secondsToString($timeTotal);
         
         return $this->render('report/workload.html.twig', array(
             'workLoads' => $workloads,
+            'hoursTotal' => $hoursTotal,
             'sessionTotal' => $sessionTotal,
         ));     
     }

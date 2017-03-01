@@ -32,7 +32,8 @@ class PresenceRepository extends \Doctrine\ORM\EntityRepository {
         
         $query = $this->getEntityManager()
             ->createQuery(
-                'SELECT p, u, COUNT(p.user) AS sessions, SEC_TO_TIME(SUM(TIME_TO_SEC(p.timeOut) - TIME_TO_SEC(p.timeIn))) AS timediff '
+                'SELECT p, u, COUNT(p.user) AS sessions, SEC_TO_TIME(SUM(TIME_TO_SEC(p.timeOut) - TIME_TO_SEC(p.timeIn))) AS timeDiff, '
+              . 'SUM(TIME_TO_SEC(p.timeOut) - TIME_TO_SEC(p.timeIn)) AS timeDiffSec '      
               . 'FROM AppBundle:Presence p '
               . 'JOIN p.user u '
               . 'WHERE p.type = \'work\' '      

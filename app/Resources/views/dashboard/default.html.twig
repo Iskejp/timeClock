@@ -14,9 +14,9 @@
         <div id="user-cloud" class='jqcloud'></div>        
     </section> 
     <section id="workload">
-        <h2>What has been done?</h2>
+        <h2>School Workload {{ timeTotal }}</h2>
         <p><a href="{{ path('workload') }}">Print Workload report </a></p>
-        <div id="work-cloud" class='jqcloud'></div>        
+        <div id="work-cloud" class='jqcloud'></div>
     </section> 
     <section id="navigation">
         <span class="button"><a href="{{ path('signOut') }}">Sign Out</a></span>
@@ -27,10 +27,10 @@
     {{ parent() }}
     
     <script type="text/javascript">
-        var words = {{ (names|json_encode|raw) }};
-        var work = {{ (workers|json_encode|raw) }};
+        var names = {{ (names|json_encode|raw) }};
+        var workTimes = {{ (workTimes|json_encode|raw) }};
         
-        $('#user-cloud').jQCloud(words);
-        $('#work-cloud').jQCloud(work);
+        $('#user-cloud').jQCloud(names);
+        $('#work-cloud').jQCloud(workTimes);
     </script>
 {% endblock %}

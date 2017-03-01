@@ -54,7 +54,7 @@ class Presence
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="timePeriod", type="time", nullable=true)
+     * @ORM\Column(name="timePeriod", type="datetime", nullable=true)
      */
     private $timePeriod;
     
@@ -218,7 +218,7 @@ class Presence
     /**
      * Get timePeriod
      *
-     * @return \DateTime
+     * @return \Time
      */
     public function getTimePeriod()
     {

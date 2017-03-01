@@ -34,48 +34,58 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author David Yilma
  */
-class DashboardController extends BasicController {
-    
+class DashboardController extends BasicController
+{
     /**
      * @Route("/dashboard/default", name="dashboard")
      */
-    public function defaultAction(Request $request) {
+    public function defaultAction(Request $request) 
+    {
+        $timeTotal = 0;
         
         //Check session and load data
-        if($this->checkSession($request)) {
+        if($this->checkSession($request))
+        {
             $token = $this->cookies->get('session');
-        } else {
+        }
+        else
+        {
             return $this->redirectToRoute('home');
         }
         
         //Get user code and search for user details
         $userCode = $this->cookies->get('user');
         $user = $this->findUser($userCode);
-        if($user === NULL) {
+        if($user === NULL)
+        {
             return $this->redirectToRoute('home');
         }
         
-        if($this->isUserIn($token)) {
+        if($this->isUserIn($token))
+        {
             
             //Get current time
             $now = new \DateTime('now');
             
-            //Find presence in records
+            //Search for presence
             $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
                     array('type' => 'work', 'token' => $token)
             );
             
+            if($presence === NULL)
+            {
+                return $this->redirectToRoute('home');  
+            }
+            
             $userTime = $presence->getTimeIn();
             $userInterval = $now->diff($userTime);
             
-            //Find other active users
+            //Search for active users
             $peopleIn = $this->whoIsIn();
             
-            //Search for workload
-            $workloads = $this->getDoctrine()->getRepository('AppBundle:Presence')->findWorkload();
-            
             //Generate date for JQCloud - People In
-            foreach($peopleIn as $person) {
+            foreach($peopleIn as $person)
+            {
                 //Read sign in time and count interval
                 $time = $person->getTimeIn();
                 $interval = $now->diff($time);
@@ -83,26 +93,41 @@ class DashboardController extends BasicController {
                 $names[] = array('text' => $person->getUser()->getName(), 'weight' => $interval->format('%i'));
             }
             
-            //Generate Data for JQCloud - Worker
-            foreach($workloads as $workload) {
-                $workers[] = array('text' => $workload[0]->getUser()->getName(), 'weight' => $workload['sessions']);
+            //Search for workload
+            $workloads = $this->schoolWorkload();
+            
+            //Generate Data for JQCloud - Workload
+            foreach($workloads as $workload)
+            {
+                $workTimes[] = array('text' => $workload['timeDiff'], 'weight' => $workload['sessions']);
+                $timeTotal += $workload['timeDiffSec'];                
             }
             
             return $this->render('dashboard/default.html.twig', array(
                 'time' => $userTime,
                 'interval' => $userInterval->format('%d days %h hours %i minutes %s seconds'),
                 'names' => $names,
-                'workers' => $workers,
+                'workTimes' => $workTimes,
+                'timeTotal' => $this->secondsToString($timeTotal),
                 'user' => $user,
             ));
-        } else {
+        }
+        else
+        {
             return $this->redirectToRoute('home');            
         }
         
     }
     
-    private function whoIsIn() {
+    private function whoIsIn()
+    {
         $users = $this->getDoctrine()->getRepository('AppBundle:Presence')->findAllUsersInWork();
         return $users;
-    }    
+    }
+    
+    private function schoolWorkload()
+    {
+        $workloads = $this->getDoctrine()->getRepository('AppBundle:Presence')->findWorkload();
+        return $workloads;
+    }
 }
