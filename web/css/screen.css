@@ -93,6 +93,49 @@ section#navigation div.note {
 }
 
 section#main {
+    padding-bottom: 8%;
+}
+
+section#peopleIn {
+    background: rgb(0, 50, 150);
+}
+
+section#peopleIn h2 {
+    color: rgb(255, 255, 255);
+    background: rgb(0, 30, 50);
+    padding: 2%;
+}
+
+section#peopleIn a {
+    color: rgb(255, 255, 255);
+    padding: 1%;
+}
+
+section#peopleIn a:hover {
+    background: rgb(0, 100, 200);
+    text-decoration: none;
+    padding: 1%;
+}
+
+section#workload {
+    background: rgb(235, 235, 235);
+}
+
+section#workload h2 {
+    background: rgb(200, 200, 200);
+    padding: 2%;
+}
+
+section#workload a {
+    color: rgb(0, 50, 150);
+    padding: 1%;
+}
+
+section#workload a:hover {
+    color: rgb(255, 255, 255);
+    background: rgb(0, 30, 50);
+    text-decoration: none;
+    padding: 1%;
 }
 
 section#report {

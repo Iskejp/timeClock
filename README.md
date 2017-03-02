@@ -10,6 +10,7 @@ A simple and beautiful system for recording and tracking a staff attendance.
 - [+] Introduced Workload report and the word cloud.
 - [*] Improved table Presence in the database.
 - [*] Fixed Sign In as a last user button.
+- [*] Improved design.
 
 ###Version 1.0 (19/02/17)
 - [+] Basic user management.
