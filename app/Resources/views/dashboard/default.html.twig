@@ -6,20 +6,23 @@
 {% block body %}
     <section id="main">
         <h1 class="hoverinfo">I came <time class="timeago" datetime="{{ time|date('c') }}" title="The session is running for {{ interval }}"></time>!</h1>
-        <p>Today is {{ time|date('l, d F Y') }} your are present since <time datetime="{{ time|date('c') }}" title="">{{ time|date('H:i') }}</time> as <span title="My code is {{ user.code }}." class="hoverhelp"><strong>{{ user.name }}</strong></span>.</p>
+        <p>Today is {{ 'now'|date('l, j F Y') }} your are present since <date>{{ time|date('l, j F Y') }}</date> <time datetime="{{ time|date('c') }}" title="">{{ time|date('H:i') }}</time> as <span title="My code is {{ user.code }}." class="hoverhelp"><strong>{{ user.name }}</strong></span>.</p>
     </section>
     <section id="peopleIn">
         <h2>Who is in?</h2>
-        <p><a href="{{ path('peopleIn') }}">Print report who is in</a></p>
+        <p><a href="{{ path('peopleIn') }}">Print Present People Report</a></p>
         <div id="user-cloud" class='jqcloud'></div>        
     </section> 
     <section id="workload">
-        <h2>School Workload {{ timeTotal }}</h2>
-        <p><a href="{{ path('workload') }}">Print Workload report </a></p>
+        <h2>Workload {{ timeTotal }}</h2>
+        <p><a href="{{ path('workload') }}">Print Workload Report </a></p>
         <div id="work-cloud" class='jqcloud'></div>
     </section> 
     <section id="navigation">
-        <span class="button"><a href="{{ path('signOut') }}">Sign Out</a></span>
+        <span class="button"><a href="#main">Me</a></span>
+        <span class="button"><a href="#peopleIn">Who is in</a></span>
+        <span class="button"><a href="#workload">Workload</a></span>
+        <span class="button warning"><a href="{{ path('signOut')}}">Sign Out</a></span>
     </section>
 {% endblock %}
 

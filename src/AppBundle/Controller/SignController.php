@@ -36,7 +36,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 //Entities
-use \AppBundle\Entity\User;
 use AppBundle\Entity\Presence;
 
 /**
@@ -56,36 +55,34 @@ class SignController extends BasicController {
     public function inAction(Request $request) {
 
         //Check session and load data
-        if($this->checkSession($request)) {
-            $token = $this->cookies->get('session');
-        } else {
-            $token = FALSE;
-        }
+        $token = $this->readSession($request, 'token');
         
         //Get user code and search for user details
-        $userCode = $request->get('code');
+        $userCode = $request->query->get('code');
         $user = $this->findUser($userCode);
         if($user === null) {
             return $this->redirectToRoute('home');
         }
         
-        if(!$this->isUserIn($token)) {
+        //Create new user session
+        $userId = $user->getId();
+        $presence = $this->isUserIn($token, $userId);
+        if(!$presence) {
             //Get current time
             $now = new \DateTime('now');
             
             //Prepare unique token
             $nowString = $now->format('Y/m/d-H:i:s');
-            $userId = $user->getId();
             $token = hash('sha256', $nowString.$userId);
             
             //Save token and user obejct into the cookie
             $response = new Response();
-            $cookieSession = new Cookie('session', $token, time()+self::WORKING);
+            $cookieToken = new Cookie('token', $token, time()+self::WORKING);
             //Permanent user cookies
             $cookieUser = new Cookie('user', $userCode, time()+self::MONTH);
 
             //Set cookies data and create cookies
-            $response->headers->setCookie($cookieSession);
+            $response->headers->setCookie($cookieToken);
             $response->headers->setCookie($cookieUser);
             $response->send();
             
@@ -102,8 +99,8 @@ class SignController extends BasicController {
             //Save data to DB
             $em->flush();
         }
-        
-        return $this->redirectToRoute('dashboard');            
+
+        return $this->redirectToRoute('dashboard', array('token' => $presence->getToken()));         
     }
 
     /**
@@ -111,13 +108,14 @@ class SignController extends BasicController {
      */
     public function upAction(Request $request) {
         
-        //Cleare cookies from browser.
+        //Cleare User cookie from browser.
         if($request->cookies->has('user')) {
             $response = new Response();
             $response->headers->clearCookie('user');
             $response->send();
         }
         
+        //Sign Up Form
         $form = $this->createFormBuilder()
             ->add('code', TextType::class, array('label' => FALSE, 'attr' => array('placeholder' => 'Code Eg. 1111')))
             ->add('save', SubmitType::class, array('label' => 'Sign Me Up'))
@@ -126,9 +124,9 @@ class SignController extends BasicController {
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $newUser = $form->getData();
+            $user = $form->getData();
             
-            $currentUser = $this->findUser($newUser['code']);
+            $currentUser = $this->findUser($user['code']);
             if($currentUser === NULL) {
                 //Prepare an object for new user
                 //$user = new User();
@@ -150,7 +148,7 @@ class SignController extends BasicController {
                 ));
             }
             
-            return $this->redirectToRoute('signIn', array('code' => $newUser['code']));
+            return $this->redirectToRoute('signIn', array('code' => $user['code']));
         }
         
         return $this->render('sign/up.html.twig', array(
@@ -165,50 +163,43 @@ class SignController extends BasicController {
     public function outAction(Request $request) {
         
         //Check session and load data
-        if($this->checkSession($request)) {
-            $token = $this->cookies->get('session');
-        } else {
+        $token = $this->readSession($request, 'token');
+        if(!$token) {
             $this->redirectToRoute('home');
-        }
-        
-        //Search for user details        
-        $userCode = $this->cookies->get('user');
-        $user = $this->findUser($userCode);
-        
-        if($user === NULL || !isset($token))
-        {
-            return $this->redirectToRoute('home');
         }
         
         //Prepare an object for new presence
         $em = $this->getDoctrine()->getManager();
-        $session = $em->getRepository('AppBundle:Presence')->findOneBy(
+        $userSession = $em->getRepository('AppBundle:Presence')->findOneBy(
             array('token' => $token, 'timeOut' => NULL)
         );
 
-        if (!$session)
+        if (!$userSession)
         {
             throw $this->createNotFoundException(
-                'No session found.'
+                'No User Session found.'
             );
         }
         
         //Figure out a time difference
         $now = new \DateTime('now');
-        $timeIn = $session->getTimeIn();
+        $timeIn = $userSession->getTimeIn();
         $timePeriod = $now->diff($timeIn)->format('%H:%I:%S');
 
         //Update data
-        $session->setTimeOut($now);
-        $session->setTimePeriod(\DateTime::createFromFormat('H:i:s', $timePeriod)); //Convert DateInterval to DateTime
+        $userSession->setTimeOut($now);
+        $userSession->setTimePeriod(\DateTime::createFromFormat('H:i:s', $timePeriod)); //Convert DateInterval to DateTime
 
         //Save data to the DB.
         $em->flush();
         
-        //Cleare cookies from browser.
+        //Cleare cookies from browser
         $response = new Response();
-        $response->headers->clearCookie('session');
+        $response->headers->clearCookie('token');
         $response->send();
+        
+        //Remove the key from session
+        $request->getSession()->remove('token');
         
         //Send data to template
         return $this->render('sign/out.html.twig');

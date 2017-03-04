@@ -1,10 +1,16 @@
 #timeClock
-A Symfony project created on February 2, 2017, 12:18 am.
-
 A simple and beautiful system for recording and tracking a staff attendance.
+
+----
+Copyright 2017 David Yilma (The MIT License)
+----
 
 ##Change log
 \+ New / * Fixed / N Night Built
+
+###Version 1.0.2 (04/03/17)
+- [*] Improved uses on various devices.
+- [*] Improved design and navigation.
 
 ###Version 1.0.1 (27/02/17)
 - [+] Introduced Workload report and the word cloud.

@@ -35,31 +35,29 @@ use Symfony\Component\HttpFoundation\Request;
  * @author David Yilma
  */
 class BasicController extends Controller {
-
-    /**
-     * Cookies data
-     * @var type Symfony\Component\HttpFoundation\Request
-     */
-    protected $cookies;
     
-    public function setCookies(Request $request) {
-        $this->cookies = $request->cookies;
-    }
-    
-    public function getCookies() {
-        return $this->cookies;
-    }
-
-    protected function checkSession(Request $request)
+    protected function readSession(Request $request, $parameter)
     {
-        $this->setCookies($request);
-        return $request->cookies->has('session');
+        //Cookies
+        $userSession = ($request->cookies->has($parameter)) ? $request->cookies->get($parameter) : FALSE;
+        
+        //GET
+        if(!$userSession)
+        {
+            $userSession = ($request->query->has($parameter)) ? $request->query->get($parameter) : FALSE ;
+        }
+        
+        //SESSION
+        if(!$userSession)
+        {
+            $userSession = ($request->getSession()->has($parameter)) ? $request->getSession()->get($parameter) : FALSE ;
+        }
+        
+        return $userSession;
     }
     
     protected function readUserCookie(Request $request)
     {
-        
-        $this->setCookies($request);
         
         if($request->cookies->has('user'))
         {
@@ -72,24 +70,45 @@ class BasicController extends Controller {
     }
 
 
-    protected function findUser($userCode = null)
+    protected function findUser($userCode, $token = NULL)
     {
         $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(
                 array('code' => $userCode));
         
+        if($user === NULL && ($token !== NULL || $token !== FALSE))
+        {
+            $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
+                    array('type' => 'work', 'token' => $token, 'timeOut' => NULL)
+            );
+            
+            $user = $this->getDoctrine()->getRepository('AppBundle:User')->findOneBy(
+                    array('id' => $presence->getUserId()));
+        }
+        
         return $user;
     }
     
-    protected function isUserIn($token)
+    protected function isUserIn($token, $userId = NULL)
     {
-        if($token) {
+        if($token) 
+        {
             $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
-                    array('type' => 'out', 'token' => $token)
+                    array('type' => 'work', 'token' => $token, 'timeOut' => NULL)
             );
             
-            return ($presence) ? FALSE : TRUE;
-        } else {
-            return false;
+            return ($presence) ? $presence : FALSE;
+        } 
+        else if ($userId !== NULL)
+        {
+            $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
+                    array('type' => 'work', 'user' => $userId, 'timeOut' => NULL)
+            );
+            
+            return ($presence) ? $presence : FALSE;
+        }
+        else
+        {
+            return FALSE;
         }
     }
     
