@@ -44,8 +44,8 @@ class ReportController extends BasicController {
         $overallAnalytics = array();
         $hrs = $min = $sec = 0;
         
-        //Check session redirect if doesn't exist
-        if(!$this->checkSession($request)) {
+        //Check session redirect if doesn't exist        
+        if(!$this->readSession($request, 'token')) {
             return $this->redirectToRoute('home');
         }
         
@@ -88,7 +88,7 @@ class ReportController extends BasicController {
         //$lastMonday = new \DateTime(strtotime('last Monday'));
         
         //Check session redirect if doesn't exist
-        if(!$this->checkSession($request)) {
+        if(!$this->readSession($request, 'token')) {
             return $this->redirectToRoute('home');
         }
         

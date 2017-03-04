@@ -44,38 +44,29 @@ class DashboardController extends BasicController
         $timeTotal = 0;
         
         //Check session and load data
-        if($this->checkSession($request))
-        {
-            $token = $this->cookies->get('session');
-        }
-        else
+        $token = $this->readSession($request, 'token');
+        if(!$token)
         {
             return $this->redirectToRoute('home');
         }
         
         //Get user code and search for user details
-        $userCode = $this->cookies->get('user');
-        $user = $this->findUser($userCode);
+        $userCode = $request->cookies->get('user');        
+        $user = $this->findUser($userCode, $token);
         if($user === NULL)
         {
             return $this->redirectToRoute('home');
         }
         
-        if($this->isUserIn($token))
+        //Fetch user data
+        $presence = $this->isUserIn($token);
+        if($presence)
         {
+            //Save token to session
+            $request->getSession()->set('token', $token);
             
             //Get current time
             $now = new \DateTime('now');
-            
-            //Search for presence
-            $presence = $this->getDoctrine()->getRepository('AppBundle:Presence')->findOneBy(
-                    array('type' => 'work', 'token' => $token)
-            );
-            
-            if($presence === NULL)
-            {
-                return $this->redirectToRoute('home');  
-            }
             
             $userTime = $presence->getTimeIn();
             $userInterval = $now->diff($userTime);
@@ -110,6 +101,7 @@ class DashboardController extends BasicController
                 'workTimes' => $workTimes,
                 'timeTotal' => $this->secondsToString($timeTotal),
                 'user' => $user,
+                'token' => $token,
             ));
         }
         else

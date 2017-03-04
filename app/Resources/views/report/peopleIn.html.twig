@@ -1,14 +1,14 @@
 {# Report template #}
 {% extends 'base.html.twig' %}
 
-{% block title %}timeClock | Report: People signed in{% endblock %}
+{% block title %}timeClock | Report: Present People{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" media="print" href="{{ asset('css/report.css') }}">
 {% endblock %}
 
 {% block body %}
-    <h2>Report: People signed in</h2>
+    <h2>Report: Present People</h2>
     <p>Generated: {{ "now"|date('l, d F Y, H:i.s') }}</p>
     <table>
         <tbody>

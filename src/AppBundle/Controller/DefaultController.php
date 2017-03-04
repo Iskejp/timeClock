@@ -42,9 +42,8 @@ class DefaultController extends BasicController {
     public function indexAction(Request $request) {
         
         //Check session and load data
-        if($this->checkSession($request)) {
-            $token = $this->cookies->get('session');
-        } else {
+        $token = $this->readSession($request, 'token');
+        if(!$token) {
             $userCode = $this->readUserCookie($request);
             return $this->render('default/index.html.twig', array(
                 'code' => $userCode,
